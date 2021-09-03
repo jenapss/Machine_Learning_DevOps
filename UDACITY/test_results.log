@@ -1,0 +1,7 @@
+root - ERROR - ERROR =  Denominator is either zero or float--> 
+root - INFO - SUCCESS --> 
+root - INFO - SUCCESS --> 
+root - ERROR - ERROR =  Denominator is either zero or float--> 
+root - ERROR - ERROR this is not string
+root - INFO - SUCCESS string is: %s 
+root - INFO - SUCCESS string is: %s 
