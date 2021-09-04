@@ -221,8 +221,8 @@ def feature_importance_plot(model, X_data, output_pth):
 
     # END LOADING THE MODEL
     explainer = shap.TreeExplainer(cv_randomforest.best_estimator_)
-    shap_values = explainer.shap_values(X_test)
-    shap.summary_plot(shap_values, X_test plot_type = 'bar')
+    shap_values = explainer.shap_values(X_data)
+    shap.summary_plot(shap_values, X_data, plot_type = 'bar')
 
     plt.savefig('./images/results3.png')
 
