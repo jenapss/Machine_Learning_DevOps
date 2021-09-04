@@ -223,7 +223,7 @@ def feature_importance_plot(model, X_data, output_pth):
     explainer = shap.TreeExplainer(cv_randomforest.best_estimator_)
     shap_values = explainer.shap_values(X_data)
     shap.summary_plot(shap_values, X_data, plot_type = 'bar')
-
+    # save plot
     plt.savefig('./images/results3.png')
 
 
@@ -242,7 +242,7 @@ def feature_importance_plot(model, X_data, output_pth):
     # Add bars
     plt.bar(range(X_data.shape[1]), importances[indices])
     # Add feature names as x-axis labels
-    plt.xsticks(range(X_data.shape[1]), names, rotation = 90)
+    plt.xticks(range(X_data.shape[1]), names, rotation = 90)
     plt.savefig('./images/results4.png')
 
     return None
