@@ -115,8 +115,17 @@ def perform_feature_engineering(df,response):
 
 
 def model():
+
     """
     Model Initialization
+
+    input: None
+
+    output: cv_rfc, lrc 
+                
+                cv_rfc - Cross validation of Random Forest Classifier model
+                lrc - Logistic Regression model
+
     """
 
     rfc = RandomForestClassifier(random_state=42)
@@ -128,8 +137,8 @@ def model():
         'max_depth' : [4,5,100],
         'criterion' : ['gini', 'entropy']
     }
+
     cv_rfc = GridSearchCV(estimator=rfc, param_grid=param_grid,cv=5)
-    
     return cv_rfc, lrc
     
 
@@ -158,18 +167,37 @@ def train_models(X_train, X_test, y_train, y_test):
     y_test_preds_lr = log_reg.predict(X_test)
 
     # scores
-    print('random forest results')
-    print('test results')
-    print(classification_report(y_test, y_test_preds_rf))
-    print('train results')
-    print(classification_report(y_train, y_train_preds_rf))
+    print('RANDOM FOREST RESULTS \n')
 
-    print('logistic regression results')
-    print('test results')
-    print(classification_report(y_test, y_test_preds_lr))
-    print('train results')
-    print(classification_report(y_train, y_train_preds_lr))
+    print('TEST RESULTS \n', classification_report(y_test, y_test_preds_rf))
+    print('TRAIN RESULTS \n', classification_report(y_train, y_train_preds_rf))
 
+    print('LOGREG RESULTS \n')
+
+    print('TEST RESULTS \n', classification_report(y_test, y_test_preds_lr))
+    print('TRAIN RESULTS \n', classification_report(y_train, y_train_preds_lr))
+    
+
+    # ----- PLOTS ----- PLOTS ---- 
+
+    # logistics regression results
+    lrc_plot = plot_roc_curve(log_reg,X_test,y_test)
+    plt.savefig('./images/result1.png')
+
+    # random forest regression results
+
+    plt.figure(figsize=(15,8))
+    ax = plt.gca()
+    plot_roc_curve(cv_randomforest.best_estimator_, X_test, y_test, ax=ax, alpha=0.8)
+
+    lrc_plot.plot(ax=ax, alpha=0.8)
+    plt.savefig('./images/results2.png')
+
+
+    # save the best model
+    joblib.dump(cv_randomforest.best_estimator_, './models/rfc_model.pkl')
+    joblib.dump(log_reg, './models/logistic_model.pkl')
+        
     return None
     
 
@@ -183,9 +211,41 @@ def feature_importance_plot(model, X_data, output_pth):
 
     output:
              None
-    '''
-    pass
 
+    '''
+
+    # LOAD THE MODEL
+    cv_randomforest = joblib.load('./models/rfc_model.pkl')
+    lr_model = joblib.load('./models/lr_model.pkl')
+
+
+    # END LOADING THE MODEL
+    explainer = shap.TreeExplainer(cv_randomforest.best_estimator_)
+    shap_values = explainer.shap_values(X_test)
+    shap.summary_plot(shap_values, X_test plot_type = 'bar')
+
+    plt.savefig('./images/results3.png')
+
+
+
+    # Calculate feature importances
+    importances = cv_randomforest.best_estimator_.feature_importances_
+    #Sort feature importances in descending order
+    indices = np.argsort(importances)[::-1]
+    # Rearrange feature names so they match the sorted feature names
+    names = [X_data.columns[i] for i in indices]
+
+    # Create a plot and save it
+    plt.figure(figsize=(20,5))
+    plt.title('Feature Importances')
+    plt.ylabel('Importance')
+    # Add bars
+    plt.bar(range(X_data.shape[1]), importances[indices])
+    # Add feature names as x-axis labels
+    plt.xsticks(range(X_data.shape[1]), names, rotation = 90)
+    plt.savefig('./images/results4.png')
+
+    return None
 
 
 def classification_report_image(y_train,
