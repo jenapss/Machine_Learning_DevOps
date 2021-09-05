@@ -31,6 +31,18 @@ def test_eda(perform_eda):
 	'''
 	test perform eda function
 	'''
+	df = cls.import_data("./data/bank_data.csv")
+	try:
+		perform_eda(df) 
+		assert os.path.exists('UDACITY/images/1.jpg') == True
+		assert os.path.exists('UDACITY/images/2.jpg') == True
+		assert os.path.exists('UDACITY/images/3.jpg') == True
+		assert os.path.exists('UDACITY/images/4.jpg') == True
+		assert os.path.exists('UDACITY/images/5.jpg') == True
+		logging.info('Testing perform_data: SUCCESS')
+	except AssertionError as err:
+		logging.error("Testing perform_data: The plot have not been saved")
+		raise err
 
 
 def test_encoder_helper(encoder_helper):
