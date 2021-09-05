@@ -63,6 +63,13 @@ def test_train_models(train_models):
 	'''
 
 
+
+def main():
+    '''
+	main call function
+	'''
+    pass
+
 if __name__ == "__main__":
 	pass
 
