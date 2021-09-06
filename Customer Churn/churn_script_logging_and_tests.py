@@ -63,7 +63,7 @@ def test_encoder_helper(encoder_helper):
 		assert (category_lst[3] + '_Churn' in df) == True
 		assert (category_lst[4] + '_Churn' in df) == True
 		logging.info('SUCCESS = Testing encoder_helper: Columns are created')
-	except AssertionError: as err:
+	except AssertionError as err:
 		logging.error("ERROR = Testing encoder_helper :   Columns are not created!")
 		raise err
 
@@ -72,6 +72,26 @@ def test_perform_feature_engineering(perform_feature_engineering):
 	'''
 	test perform_feature_engineering
 	'''
+	df = cls.import_data('./data/bank_csv.csv')
+	response = [] # need to define
+	try:
+		X_train, X_test, y_train, y_test = perform_feature_engineering(df,response)
+		logging.info(" Performing Feature Engineering SUCCESS")
+	except:
+		logging.error("Feature Engineering ERROR")
+		print("ERROR")
+	
+	try:
+		assert X_train.shape[0] > 0 
+		assert X_test.shape[0] > 0
+		assert y_train.shape[0] > 0
+		assert y_test.shape[0] > 0
+		logging.info("Feature Engineering SUCCESS")
+	except AssertionError as err:
+		logging.error("Feature Engineering ERROR")
+		raise err
+		
+
 
 
 def test_train_models(train_models):
