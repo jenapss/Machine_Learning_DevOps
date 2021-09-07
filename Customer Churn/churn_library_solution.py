@@ -145,6 +145,9 @@ def model():
     return cv_rfc, lrc
 
 
+
+
+
 def train_models(x_train, x_test, y_train, y_test):
     '''
     train, store model results: images + scores, and store models
@@ -159,34 +162,31 @@ def train_models(x_train, x_test, y_train, y_test):
     # grid search
     cv_randomforest, log_reg = model()
     cv_randomforest.fit(x_train, y_train)
-
+    # logreg
     log_reg.fit(x_train, y_train)
 
-    y_train_preds_rf = cv_randomforest.best_estimator_.predict(x_train)
-    y_test_preds_rf = cv_randomforest.best_estimator_.predict(x_test)
+    # save the best model
+    joblib.dump(cv_randomforest.best_estimator_, './models/rfc_model.pkl')
+    joblib.dump(log_reg, './models/logistic_model.pkl')
 
-    y_train_preds_lr = log_reg.predict(x_train)
-    y_test_preds_lr = log_reg.predict(x_test)
 
-    # scores
-    print('RANDOM FOREST RESULTS \n')
 
-    print('TEST RESULTS \n', classification_report(y_test, y_test_preds_rf))
-    print('TRAIN RESULTS \n', classification_report(y_train, y_train_preds_rf))
+def plot_training_results(x_train, y_train, x_test, y_test):
+    '''
+    Plott training results
 
-    print('LOGREG RESULTS \n')
-
-    print('TEST RESULTS \n', classification_report(y_test, y_test_preds_lr))
-    print('TRAIN RESULTS \n', classification_report(y_train, y_train_preds_lr))
+    '''
+    cv_randomforest, log_reg = model()
+    cv_randomforest.fit(x_train, y_train)
+    # logreg
+    log_reg.fit(x_train, y_train)
 
     # ----- PLOTS ----- PLOTS ----
-
     # logistics regression results
     lrc_plot = plot_roc_curve(log_reg, x_test, y_test)
     plt.savefig('./images/result1.png')
 
     # random forest regression results
-
     plt.figure(figsize=(15, 8))
     axis = plt.gca()
     plot_roc_curve(cv_randomforest.best_estimator_,
@@ -195,9 +195,6 @@ def train_models(x_train, x_test, y_train, y_test):
     lrc_plot.plot(ax=axis, alpha=0.8)
     plt.savefig('./images/results2.png')
 
-    # save the best model
-    joblib.dump(cv_randomforest.best_estimator_, './models/rfc_model.pkl')
-    joblib.dump(log_reg, './models/logistic_model.pkl')
 
 
 
@@ -240,7 +237,6 @@ def feature_importance_plot(x_data):
     # Add feature names as x-axis labels
     plt.xticks(range(x_data.shape[1]), names, rotation=90)
     plt.savefig('./images/results4.png')
-
 
 
 def classification_report_image(y_train,
@@ -287,3 +283,16 @@ def classification_report_image(y_train,
              'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
     plt.axis('off')
     plt.savefig('./images/last_result2.png')
+
+
+def main():
+    '''
+    ML Pipeline for Customer Churn prediction project
+
+    '''
+
+    pass
+
+
+if __name__ == '__main__':
+    main()
