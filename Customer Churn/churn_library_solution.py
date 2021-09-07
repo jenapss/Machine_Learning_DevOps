@@ -11,7 +11,6 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import normalize
 import shap
 import joblib
 import pandas as pd
@@ -36,7 +35,7 @@ def import_data(pth):
     return pd.read_csv(pth)
 
 
-def perform_eda(df: pd.DataFrame):
+def perform_eda(dt_frame):
     """perform eda on df and save figures to images folder
     input:
             df: pandas dataframe
@@ -45,30 +44,30 @@ def perform_eda(df: pd.DataFrame):
             None
     """
 
-    df['Churn'] = df['Attrition_Flag'].apply(
+    dt_frame['Churn'] = dt_frame['Attrition_Flag'].apply(
         lambda val: 0 if val == "Existing Customer" else 1)
-    fig1 = df['Churn'].hist().get_figure()
+    fig1 = dt_frame['Churn'].hist().get_figure()
     fig1.savefig('IMG_PATH/1.jpg')
 
-    fig2 = df['Customer_Age'].hist().get_figure()
+    fig2 = dt_frame['Customer_Age'].hist().get_figure()
     fig2.savefig('IMG_PATH/2.jpg')
 
-    fig3 = df.Marital_Status.value_counts(
+    fig3 = dt_frame.Marital_Status.value_counts(
         'normalize').plot(kind='bar').get_figure()
     fig3.savefig('IMG_PATH/3.jpg')
 
-    fig4 = sns.distplot(df['Total_Trans_Ct']).get_figure()
+    fig4 = sns.distplot(dt_frame['Total_Trans_Ct']).get_figure()
     fig4.savefig('IMG_PATH/4.jpg')
 
     fig5 = sns.heatmap(
-        df.corr(),
+        dt_frame.corr(),
         annot=False,
         cmap='Dark2_r',
         linewidths=2).get_figure()
     fig5.savefig('IMG_PATH/5.jpg')
 
 
-def encoder_helper(df: pd.DataFrame, category_lst):  # deleted one argument
+def encoder_helper(dt_frame, category_lst):  # deleted one argument
     '''
     helper function to turn each categorical column into a new column with
     propotion of churn for each category - associated with cell 15 from the notebook
@@ -76,48 +75,47 @@ def encoder_helper(df: pd.DataFrame, category_lst):  # deleted one argument
     input:
             df: pandas dataframe
             category_lst: list of columns that contain categorical features
-            response: string of response name 
-                [optional argument that could be used for naming variables or index y column]
+            response: string of response name
+            [optional argument that could be used for naming variables or index y_data column]
 
     output:
             df: pandas dataframe with new columns for
     '''
     for category in category_lst:
         lst = []
-        groups = df.groupby(category).mean()['Churn']
-
-        for val in df[category]:
+        groups = dt_frame.groupby(category).mean()['Churn']
+        for val in dt_frame[category]:
             lst.append(groups.loc[val])
-        df['{}_Churn'.format(category)] = lst
+        dt_frame['{}_Churn'.format(category)] = lst
 
-    return df
+    return dt_frame
 
 
-def perform_feature_engineering(df, response):
+def perform_feature_engineering(dt_frame, response):
     '''
     input:
             df: pandas dataframe
-            response: string of response name 
-                [optional argument that could be used for naming variables or index y column]
+            response: string of response name
+            [optional argument that could be used for naming variables or index y_data column]
 
     output:
-              X_train: X training data
-              X_test: X testing data
-              y_train: y training data
-              y_test: y testing data
+              x_train: x_data training data
+              x_test: x_data testing data
+              y_train: y_data training data
+              y_test: y_data testing data
     '''
     # drop unneeded columns in simpler way than manually listing all needed
     # columns.
-    keep_cols = df.drop(['CLIENTNUM', 'Churn'], axis=1, inplace=True)
+    keep_cols = dt_frame.drop(['CLIENTNUM', 'Churn'], axis=1, inplace=True)
 
-    X = df[keep_cols]
-    y = df[response]
+    x_data = dt_frame[keep_cols]
+    y_data = dt_frame[response]
 
     # train test split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.3, random_state=42)
+    x_train, x_test, y_train, y_test = train_test_split(
+        x_data, y_data, test_size=0.3, random_state=42)
 
-    return X_train, X_test, y_train, y_test
+    return x_train, x_test, y_train, y_test
 
 
 def model():
@@ -147,28 +145,28 @@ def model():
     return cv_rfc, lrc
 
 
-def train_models(X_train, X_test, y_train, y_test):
+def train_models(x_train, x_test, y_train, y_test):
     '''
     train, store model results: images + scores, and store models
     input:
-              X_train: X training data
-              X_test: X testing data
-              y_train: y training data
-              y_test: y testing data
+              x_train: x_data training data
+              x_test: x_data testing data
+              y_train: y_data training data
+              y_test: y_data testing data
     output:
               None
     '''
     # grid search
     cv_randomforest, log_reg = model()
-    cv_randomforest.fit(X_train, y_train)
+    cv_randomforest.fit(x_train, y_train)
 
-    log_reg.fit(X_train, y_train)
+    log_reg.fit(x_train, y_train)
 
-    y_train_preds_rf = cv_randomforest.best_estimator_.predict(X_train)
-    y_test_preds_rf = cv_randomforest.best_estimator_.predict(X_test)
+    y_train_preds_rf = cv_randomforest.best_estimator_.predict(x_train)
+    y_test_preds_rf = cv_randomforest.best_estimator_.predict(x_test)
 
-    y_train_preds_lr = log_reg.predict(X_train)
-    y_test_preds_lr = log_reg.predict(X_test)
+    y_train_preds_lr = log_reg.predict(x_train)
+    y_test_preds_lr = log_reg.predict(x_test)
 
     # scores
     print('RANDOM FOREST RESULTS \n')
@@ -184,32 +182,31 @@ def train_models(X_train, X_test, y_train, y_test):
     # ----- PLOTS ----- PLOTS ----
 
     # logistics regression results
-    lrc_plot = plot_roc_curve(log_reg, X_test, y_test)
+    lrc_plot = plot_roc_curve(log_reg, x_test, y_test)
     plt.savefig('./images/result1.png')
 
     # random forest regression results
 
     plt.figure(figsize=(15, 8))
-    ax = plt.gca()
+    axis = plt.gca()
     plot_roc_curve(cv_randomforest.best_estimator_,
-                   X_test, y_test, ax=ax, alpha=0.8)
+                   x_test, y_test, ax=axis, alpha=0.8)
 
-    lrc_plot.plot(ax=ax, alpha=0.8)
+    lrc_plot.plot(ax=axis, alpha=0.8)
     plt.savefig('./images/results2.png')
 
     # save the best model
     joblib.dump(cv_randomforest.best_estimator_, './models/rfc_model.pkl')
     joblib.dump(log_reg, './models/logistic_model.pkl')
 
-    return None
 
 
-def feature_importance_plot(model, X_data, output_pth):
+def feature_importance_plot(x_data):
     '''
     creates and stores the feature importances in pth
     input:
             model: model object containing feature_importances_
-            X_data: pandas dataframe of X values
+            x_data: pandas dataframe of x_data values
             output_pth: path to store the figure
 
     output:
@@ -222,8 +219,8 @@ def feature_importance_plot(model, X_data, output_pth):
 
     # END LOADING THE MODEL
     explainer = shap.TreeExplainer(cv_randomforest.best_estimator_)
-    shap_values = explainer.shap_values(X_data)
-    shap.summary_plot(shap_values, X_data, plot_type='bar')
+    shap_values = explainer.shap_values(x_data)
+    shap.summary_plot(shap_values, x_data, plot_type='bar')
     # save plot
     plt.savefig('./images/results3.png')
 
@@ -232,19 +229,18 @@ def feature_importance_plot(model, X_data, output_pth):
     # Sort feature importances in descending order
     indices = np.argsort(importances)[::-1]
     # Rearrange feature names so they match the sorted feature names
-    names = [X_data.columns[i] for i in indices]
+    names = [x_data.columns[i] for i in indices]
 
     # Create a plot and save it
     plt.figure(figsize=(20, 5))
     plt.title('Feature Importances')
     plt.ylabel('Importance')
     # Add bars
-    plt.bar(range(X_data.shape[1]), importances[indices])
+    plt.bar(range(x_data.shape[1]), importances[indices])
     # Add feature names as x-axis labels
-    plt.xticks(range(X_data.shape[1]), names, rotation=90)
+    plt.xticks(range(x_data.shape[1]), names, rotation=90)
     plt.savefig('./images/results4.png')
 
-    return None
 
 
 def classification_report_image(y_train,
