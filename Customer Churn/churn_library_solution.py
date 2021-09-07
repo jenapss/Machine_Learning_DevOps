@@ -171,28 +171,20 @@ def train_models(x_train, x_test, y_train, y_test):
 
 
 
-def plot_training_results(x_train, y_train, x_test, y_test):
+def plot_training_results( x_test, y_test):
     '''
     Plott training results
 
     '''
-    cv_randomforest, log_reg = model()
-    cv_randomforest.fit(x_train, y_train)
-    # logreg
-    log_reg.fit(x_train, y_train)
-
+    log_reg = joblib.load('./models/logistic_model.pkl')
+    cv_randomforest = joblib.load('./models/rfc_model.pkl')
     # ----- PLOTS ----- PLOTS ----
     # logistics regression results
-    lrc_plot = plot_roc_curve(log_reg, x_test, y_test)
-    plt.savefig('./images/result1.png')
-
-    # random forest regression results
-    plt.figure(figsize=(15, 8))
+    plt.figure(figsize=(20, 12))
     axis = plt.gca()
+    plot_roc_curve(log_reg, x_test, y_test)
     plot_roc_curve(cv_randomforest.best_estimator_,
                    x_test, y_test, ax=axis, alpha=0.8)
-
-    lrc_plot.plot(ax=axis, alpha=0.8)
     plt.savefig('./images/results2.png')
 
 
