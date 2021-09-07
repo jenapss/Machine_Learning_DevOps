@@ -171,7 +171,7 @@ def train_models(x_train, x_test, y_train, y_test):
 
 
 
-def plot_training_results( x_test, y_test):
+def plot_training_results(x_test, y_test):
     '''
     Plott training results
 
