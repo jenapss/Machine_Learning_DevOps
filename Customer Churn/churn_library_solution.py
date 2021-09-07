@@ -18,7 +18,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
-IMG_PATH = 'UDACITY_1/images/'
+IMG_PATH = 'Customer Churn/images/'
+CSV_DATA = 'Customer Churn/data/bank_data.csv'
 
 
 def import_data(pth):
@@ -29,7 +30,6 @@ def import_data(pth):
                 pth: a path to the csv
         output:
                 df: pandas dataframe
-
 
     """
     return pd.read_csv(pth)
@@ -47,24 +47,24 @@ def perform_eda(dt_frame):
     dt_frame['Churn'] = dt_frame['Attrition_Flag'].apply(
         lambda val: 0 if val == "Existing Customer" else 1)
     fig1 = dt_frame['Churn'].hist().get_figure()
-    fig1.savefig('IMG_PATH/1.jpg')
+    fig1.savefig(IMG_PATH + '1.jpg')
 
     fig2 = dt_frame['Customer_Age'].hist().get_figure()
-    fig2.savefig('IMG_PATH/2.jpg')
+    fig2.savefig(IMG_PATH + '2.jpg')
 
     fig3 = dt_frame.Marital_Status.value_counts(
         'normalize').plot(kind='bar').get_figure()
-    fig3.savefig('IMG_PATH/3.jpg')
+    fig3.savefig(IMG_PATH + '3.jpg')
 
     fig4 = sns.distplot(dt_frame['Total_Trans_Ct']).get_figure()
-    fig4.savefig('IMG_PATH/4.jpg')
+    fig4.savefig(IMG_PATH + '4.jpg')
 
     fig5 = sns.heatmap(
         dt_frame.corr(),
         annot=False,
         cmap='Dark2_r',
         linewidths=2).get_figure()
-    fig5.savefig('IMG_PATH/5.jpg')
+    fig5.savefig(IMG_PATH + '5.jpg')
 
 
 def encoder_helper(dt_frame, category_lst):  # deleted one argument
@@ -145,10 +145,7 @@ def model():
     return cv_rfc, lrc
 
 
-
-
-
-def train_models(x_train, x_test, y_train, y_test):
+def train_models(x_train, x_test, y_train):
     '''
     train, store model results: images + scores, and store models
     input:
@@ -165,10 +162,16 @@ def train_models(x_train, x_test, y_train, y_test):
     # logreg
     log_reg.fit(x_train, y_train)
 
+    y_train_preds_rf = cv_randomforest.best_estimator_.predict(x_train)
+    y_test_preds_rf = cv_randomforest.best_estimator_.predict(x_test)
+    y_train_preds_lr = log_reg.predict(x_train)
+    y_test_preds_lr = log_reg.predict(x_test)
+
     # save the best model
     joblib.dump(cv_randomforest.best_estimator_, './models/rfc_model.pkl')
     joblib.dump(log_reg, './models/logistic_model.pkl')
 
+    return y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf
 
 
 def plot_training_results(x_test, y_test):
@@ -188,14 +191,12 @@ def plot_training_results(x_test, y_test):
     plt.savefig('./images/results2.png')
 
 
-
-
-def feature_importance_plot(x_data):
+def feature_importance_plot(x_test):
     '''
     creates and stores the feature importances in pth
     input:
             model: model object containing feature_importances_
-            x_data: pandas dataframe of x_data values
+            x_test: pandas dataframe of x_data values
             output_pth: path to store the figure
 
     output:
@@ -208,8 +209,8 @@ def feature_importance_plot(x_data):
 
     # END LOADING THE MODEL
     explainer = shap.TreeExplainer(cv_randomforest.best_estimator_)
-    shap_values = explainer.shap_values(x_data)
-    shap.summary_plot(shap_values, x_data, plot_type='bar')
+    shap_values = explainer.shap_values(x_test)
+    shap.summary_plot(shap_values, x_test, plot_type='bar')
     # save plot
     plt.savefig('./images/results3.png')
 
@@ -218,16 +219,16 @@ def feature_importance_plot(x_data):
     # Sort feature importances in descending order
     indices = np.argsort(importances)[::-1]
     # Rearrange feature names so they match the sorted feature names
-    names = [x_data.columns[i] for i in indices]
+    names = [x_test.columns[i] for i in indices]
 
     # Create a plot and save it
     plt.figure(figsize=(20, 5))
     plt.title('Feature Importances')
     plt.ylabel('Importance')
     # Add bars
-    plt.bar(range(x_data.shape[1]), importances[indices])
+    plt.bar(range(x_test.shape[1]), importances[indices])
     # Add feature names as x-axis labels
-    plt.xticks(range(x_data.shape[1]), names, rotation=90)
+    plt.xticks(range(x_test.shape[1]), names, rotation=90)
     plt.savefig('./images/results4.png')
 
 
@@ -282,8 +283,29 @@ def main():
     ML Pipeline for Customer Churn prediction project
 
     '''
+    category_lst = [
+        'Gender',
+        'Income_Category',
+        'Marital_Status',
+        'Education_Level',
+        'Card_Category']
+    response = []
+    dt_frame = import_data(CSV_DATA)
+    perform_eda(dt_frame)
+    updated_df = encoder_helper(dt_frame, category_lst)
+    x_train, x_test, y_train, y_test = perform_feature_engineering(
+        updated_df, response)
 
-    pass
+    y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf = train_models(
+        x_train, x_test, y_train)
+    plot_training_results(x_test, y_test)
+    feature_importance_plot(x_test)
+    classification_report_image(y_train,
+                                y_test,
+                                y_train_preds_lr,
+                                y_train_preds_rf,
+                                y_test_preds_lr,
+                                y_test_preds_rf)
 
 
 if __name__ == '__main__':
