@@ -106,10 +106,18 @@ def perform_feature_engineering(dt_frame, response):
     '''
     # drop unneeded columns in simpler way than manually listing all needed
     # columns.
-    keep_cols = dt_frame.drop(['CLIENTNUM', 'Churn'], axis=1, inplace=True)
+    keep_cols = ['Customer_Age', 'Dependent_count', 'Months_on_book',
+             'Total_Relationship_Count', 'Months_Inactive_12_mon',
+             'Contacts_Count_12_mon', 'Credit_Limit', 'Total_Revolving_Bal',
+             'Avg_Open_To_Buy', 'Total_Amt_Chng_Q4_Q1', 'Total_Trans_Amt',
+             'Total_Trans_Ct', 'Total_Ct_Chng_Q4_Q1', 'Avg_Utilization_Ratio',
+             'Gender_Churn', 'Education_Level_Churn', 'Marital_Status_Churn', 
+             'Income_Category_Churn', 'Card_Category_Churn']
 
-    x_data = dt_frame[keep_cols]
-    y_data = dt_frame[response]
+    
+    x_data = pd.DataFrame()
+    x_data[keep_cols] = dt_frame[keep_cols]
+    y_data = dt_frame['Churn']
 
     # train test split
     x_train, x_test, y_train, y_test = train_test_split(
@@ -296,6 +304,8 @@ def main():
     x_train, x_test, y_train, y_test = perform_feature_engineering(
         updated_df, response)
 
+    print(y_test.describe())
+    #x_train.to_csv(r'jelal.csv', index = False)
     y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf = train_models(
         x_train, x_test, y_train)
     plot_training_results(x_test, y_test)
