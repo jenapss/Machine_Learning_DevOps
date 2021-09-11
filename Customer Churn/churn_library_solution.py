@@ -48,24 +48,25 @@ def perform_eda(dt_frame):
         lambda val: 0 if val == "Existing Customer" else 1)
     fig1 = dt_frame['Churn'].hist().get_figure()
     fig1.savefig(IMG_PATH + '1.jpg')
+    plt.close()
 
     fig2 = dt_frame['Customer_Age'].hist().get_figure()
     fig2.savefig(IMG_PATH + '2.jpg')
-
+    plt.close()
     fig3 = dt_frame.Marital_Status.value_counts(
         'normalize').plot(kind='bar').get_figure()
     fig3.savefig(IMG_PATH + '3.jpg')
-
+    plt.close()
     fig4 = sns.distplot(dt_frame['Total_Trans_Ct']).get_figure()
     fig4.savefig(IMG_PATH + '4.jpg')
-
+    plt.close()
     fig5 = sns.heatmap(
         dt_frame.corr(),
         annot=False,
         cmap='Dark2_r',
         linewidths=2).get_figure()
     fig5.savefig(IMG_PATH + '5.jpg')
-
+    plt.close()
 
 def encoder_helper(dt_frame, category_lst):  # deleted one argument
     '''
@@ -198,7 +199,7 @@ def plot_training_results(x_test, y_test):
     plot_roc_curve(cv_randomforest,
                    x_test, y_test, ax=axis, alpha=0.8)
     plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results2.png')
-
+    plt.close()
 
 def feature_importance_plot(x_test):
     '''
@@ -217,14 +218,15 @@ def feature_importance_plot(x_test):
     cv_randomforest = joblib.load('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/rfc_model.pkl')
 
     # END LOADING THE MODEL
-    explainer = shap.TreeExplainer(cv_randomforest.best_estimator_)
+    explainer = shap.TreeExplainer(cv_randomforest)
     shap_values = explainer.shap_values(x_test)
-    shap.summary_plot(shap_values, x_test, plot_type='bar')
+    shap.summary_plot(shap_values, x_test, plot_type='bar',show=False)
+
     # save plot
     plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results3.png')
 
     # Calculate feature importances
-    importances = cv_randomforest.best_estimator_.feature_importances_
+    importances = cv_randomforest.feature_importances_
     # Sort feature importances in descending order
     indices = np.argsort(importances)[::-1]
     # Rearrange feature names so they match the sorted feature names
@@ -238,7 +240,7 @@ def feature_importance_plot(x_test):
     plt.bar(range(x_test.shape[1]), importances[indices])
     # Add feature names as x-axis labels
     plt.xticks(range(x_test.shape[1]), names, rotation=90)
-    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results4.png')
+    #plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results4.png')
 
 
 def classification_report_image(y_train,
@@ -305,18 +307,18 @@ def main():
     x_train, x_test, y_train, y_test = perform_feature_engineering(
         updated_df, response)
 
-    print(y_test.describe())
+    #print(y_test.describe())
     # x_train.to_csv(r'jelal.csv', index = False)
-    y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf = train_models(
-        x_train, x_test, y_train)
-    plot_training_results(x_test, y_test)
+    #y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf = train_models(
+    #    x_train, x_test, y_train)
+    #plot_training_results(x_test, y_test)
     feature_importance_plot(x_test)
-    classification_report_image(y_train,
+    '''classification_report_image(y_train,
                                 y_test,
                                 y_train_preds_lr,
                                 y_train_preds_rf,
                                 y_test_preds_lr,
-                                y_test_preds_rf)
+                                y_test_preds_rf)'''
 
 
 if __name__ == '__main__':
