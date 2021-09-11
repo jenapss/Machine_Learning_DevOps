@@ -25,7 +25,6 @@ def test_import():
 
 	try:
 		assert df.shape[0] > 0
-		assert df.shape[1] > 0
 	except AssertionError as err:
 		logging.error("Testing import_data: The file doesn't appear to have rows and columns")
 		raise err
@@ -112,11 +111,11 @@ def test_train_models():
 
 
 if __name__ == "__main__":
-	'''test_import()
-	test_eda()
+	test_import()
+	test_eda(IMG_PATH)
 	test_encoder_helper()
 	test_perform_feature_engineering()
-	test_train_models()'''
+	test_train_models()
 
 
 
