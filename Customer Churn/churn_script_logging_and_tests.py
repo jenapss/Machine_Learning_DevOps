@@ -6,7 +6,7 @@ IMG_PATH = 'Customer Churn/images'
 MODEL_PATH = 'Customer Churn/models'
 
 logging.basicConfig(
-    filename='./logs/churn_library.log',
+    filename='Customer Churn/logs/churn_library.log',
     level = logging.INFO,
     filemode='w',
     format='%(name)s - %(levelname)s - %(message)s')
@@ -17,7 +17,7 @@ def test_import():
 	'''
 
 	try:
-		df = cls.import_data("./data/bank_data.csv")
+		df = cls.import_data("Customer Churn/data/bank_data.csv")
 		logging.info("Testing import_data: SUCCESS")
 	except FileNotFoundError as err:
 		logging.error("Testing import_eda: The file wasn't found")
@@ -34,7 +34,7 @@ def test_eda(IMG_PATH):
 	'''
 	test perform eda function
 	'''
-	df = cls.import_data("./data/bank_data.csv")
+	df = cls.import_data("Customer Churn/data/bank_data.csv")
 	cls.perform_eda(df)
 	try:
 		assert os.path.exists(IMG_PATH + '/1.jpg') == True
@@ -42,9 +42,9 @@ def test_eda(IMG_PATH):
 		assert os.path.exists(IMG_PATH + '/3.jpg') == True
 		assert os.path.exists(IMG_PATH + '/4.jpg') == True
 		assert os.path.exists(IMG_PATH + '/5.jpg') == True
-		logging.info('Testing perform_data: SUCCESS')
+		logging.info('Testing perform_eda: SUCCESS')
 	except AssertionError as err:
-		logging.error("Testing perform_data: The plot have not been saved")
+		logging.error("Testing perform_eda: The plot have not been saved")
 		raise err
 
 
@@ -52,33 +52,40 @@ def test_encoder_helper():
 	'''
 	test encoder helper
 	'''
-	df = cls.import_data('./data/bank_csv.csv')
-	category_lst = ['Gender', 'Income_Category', 'Marital_Status', 'Education_Level', 'Card_Category']
-	cls.encoder_helper(df, category_lst)
 	try:
-		assert (category_lst[0] + '_Churn' in df) == True
-		assert (category_lst[1] + '_Churn' in df) == True
-		assert (category_lst[2] + '_Churn' in df) == True
-		assert (category_lst[3] + '_Churn' in df) == True
-		assert (category_lst[4] + '_Churn' in df) == True
+		df = cls.import_data('Customer Churn/data/bank_data.csv')
+		category_lst = [
+			'Gender',
+			'Income_Category',
+			'Marital_Status',
+			'Education_Level',
+			'Card_Category']
+		updated_df = cls.encoder_helper(df, category_lst)
+		print(type(updated_df))
+		assert (category_lst[0] + '_Churn' in updated_df) == True
+		assert (category_lst[1] + '_Churn' in updated_df) == True
+		assert (category_lst[2] + '_Churn' in updated_df) == True
+		assert (category_lst[3] + '_Churn' in updated_df) == True
+		assert (category_lst[4] + '_Churn' in updated_df) == True
 		logging.info('SUCCESS = Testing encoder_helper: Columns are created')
 	except AssertionError as err:
 		logging.error("ERROR = Testing encoder_helper :   Columns are not created!")
 		raise err
 
-
 def test_perform_feature_engineering():
 	'''
 	test perform_feature_engineering
 	'''
-	df = cls.import_data('./data/bank_csv.csv')
-	try:
-		X_train, X_test, y_train, y_test = cls.perform_feature_engineering(df)
-		logging.info(" Performing Feature Engineering SUCCESS")
-	except:
-		logging.error("Feature Engineering ERROR")
-		print("ERROR")
 	
+	df = cls.import_data('Customer Churn/data/bank_data.csv')
+	category_lst = [
+		'Gender',
+		'Income_Category',
+		'Marital_Status',
+		'Education_Level',
+		'Card_Category']
+	updated_df = cls.encoder_helper(df, category_lst)
+	X_train, X_test, y_train, y_test = cls.perform_feature_engineering(updated_df)
 	try:
 		assert X_train.shape[0] > 0
 		assert X_train.shape[1] == 19 

@@ -1,0 +1,5 @@
+root - INFO - Testing import_data: SUCCESS
+root - INFO - Testing perform_eda: SUCCESS
+root - INFO - SUCCESS = Testing encoder_helper: Columns are created
+root - INFO - Feature Engineering SUCCESS
+root - INFO - MODELS ARE SAVED

@@ -82,13 +82,13 @@ def encoder_helper(dt_frame, category_lst):  # deleted one argument
     output:
             df: pandas dataframe with new columns for
     '''
+    dt_frame['Churn'] = dt_frame['Attrition_Flag'].apply(lambda val: 0 if val == "Existing Customer" else 1)
     for category in category_lst:
         lst = []
         groups = dt_frame.groupby(category).mean()['Churn']
         for val in dt_frame[category]:
             lst.append(groups.loc[val])
         dt_frame['{}_Churn'.format(category)] = lst
-
     return dt_frame
 
 
@@ -303,12 +303,12 @@ def main():
         'Marital_Status',
         'Education_Level',
         'Card_Category']
-    response = ['Churn']
+    
     dt_frame = import_data(CSV_DATA)
     perform_eda(dt_frame)
     updated_df = encoder_helper(dt_frame, category_lst)
     x_train, x_test, y_train, y_test = perform_feature_engineering(
-        updated_df, response)
+        updated_df)
 
 
     y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf = train_models(
