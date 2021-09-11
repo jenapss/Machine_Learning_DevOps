@@ -166,6 +166,7 @@ def train_models(x_train, x_test, y_train):
     '''
     # grid search
     cv_randomforest, log_reg = model()
+    print('TRAINING STARTED...')
     cv_randomforest.fit(x_train, y_train)
     # logreg
     log_reg.fit(x_train, y_train)
@@ -174,10 +175,10 @@ def train_models(x_train, x_test, y_train):
     y_test_preds_rf = cv_randomforest.best_estimator_.predict(x_test)
     y_train_preds_lr = log_reg.predict(x_train)
     y_test_preds_lr = log_reg.predict(x_test)
-
+    print('TRAINING ENDED...')
     # save the best model
-    joblib.dump(cv_randomforest.best_estimator_, './models/rfc_model.pkl')
-    joblib.dump(log_reg, './models/logistic_model.pkl')
+    joblib.dump(cv_randomforest.best_estimator_, '/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/rfc_model.pkl')
+    joblib.dump(log_reg, '/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/logistic_model.pkl')
 
     return y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf
 
@@ -187,16 +188,16 @@ def plot_training_results(x_test, y_test):
     Plott training results
 
     '''
-    log_reg = joblib.load('./models/logistic_model.pkl')
-    cv_randomforest = joblib.load('./models/rfc_model.pkl')
+    log_reg = joblib.load('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/logistic_model.pkl')
+    cv_randomforest = joblib.load('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/rfc_model.pkl')
     # ----- PLOTS ----- PLOTS ----
     # logistics regression results
     plt.figure(figsize=(20, 12))
     axis = plt.gca()
     plot_roc_curve(log_reg, x_test, y_test)
-    plot_roc_curve(cv_randomforest.best_estimator_,
+    plot_roc_curve(cv_randomforest,
                    x_test, y_test, ax=axis, alpha=0.8)
-    plt.savefig('./images/results2.png')
+    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results2.png')
 
 
 def feature_importance_plot(x_test):
@@ -213,14 +214,14 @@ def feature_importance_plot(x_test):
     '''
 
     # LOAD THE MODEL
-    cv_randomforest = joblib.load('./models/rfc_model.pkl')
+    cv_randomforest = joblib.load('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/rfc_model.pkl')
 
     # END LOADING THE MODEL
     explainer = shap.TreeExplainer(cv_randomforest.best_estimator_)
     shap_values = explainer.shap_values(x_test)
     shap.summary_plot(shap_values, x_test, plot_type='bar')
     # save plot
-    plt.savefig('./images/results3.png')
+    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results3.png')
 
     # Calculate feature importances
     importances = cv_randomforest.best_estimator_.feature_importances_
@@ -237,7 +238,7 @@ def feature_importance_plot(x_test):
     plt.bar(range(x_test.shape[1]), importances[indices])
     # Add feature names as x-axis labels
     plt.xticks(range(x_test.shape[1]), names, rotation=90)
-    plt.savefig('./images/results4.png')
+    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results4.png')
 
 
 def classification_report_image(y_train,
@@ -271,7 +272,7 @@ def classification_report_image(y_train,
     plt.text(0.01, 0.7, str(classification_report(y_train, y_train_preds_rf)), {
              'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
     plt.axis('off')
-    plt.savefig('./images/last_result.png')
+    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/last_result.png')
 
     plt.rc('figure', figsize=(5, 5))
     plt.text(0.01, 1.25, str('Logistic Regression Train'),
@@ -283,7 +284,7 @@ def classification_report_image(y_train,
     plt.text(0.01, 0.7, str(classification_report(y_test, y_test_preds_lr)), {
              'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
     plt.axis('off')
-    plt.savefig('./images/last_result2.png')
+    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/last_result2.png')
 
 
 def main():
@@ -297,7 +298,7 @@ def main():
         'Marital_Status',
         'Education_Level',
         'Card_Category']
-    response = []
+    response = ['Churn']
     dt_frame = import_data(CSV_DATA)
     perform_eda(dt_frame)
     updated_df = encoder_helper(dt_frame, category_lst)
@@ -305,7 +306,7 @@ def main():
         updated_df, response)
 
     print(y_test.describe())
-    #x_train.to_csv(r'jelal.csv', index = False)
+    # x_train.to_csv(r'jelal.csv', index = False)
     y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf = train_models(
         x_train, x_test, y_train)
     plot_training_results(x_test, y_test)
