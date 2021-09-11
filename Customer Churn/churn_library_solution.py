@@ -193,11 +193,12 @@ def plot_training_results(x_test, y_test):
     cv_randomforest = joblib.load('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/rfc_model.pkl')
     # ----- PLOTS ----- PLOTS ----
     # logistics regression results
-    plt.figure(figsize=(20, 12))
+    plt.figure(1,figsize=(20, 12))
     axis = plt.gca()
-    plot_roc_curve(log_reg, x_test, y_test)
+    
     plot_roc_curve(cv_randomforest,
                    x_test, y_test, ax=axis, alpha=0.8)
+    plot_roc_curve(log_reg, x_test, y_test, ax=axis, alpha=0.8)
     plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results2.png')
     plt.close()
 
@@ -224,6 +225,7 @@ def feature_importance_plot(x_test):
 
     # save plot
     plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results3.png')
+    plt.close()
 
     # Calculate feature importances
     importances = cv_randomforest.feature_importances_
@@ -240,8 +242,8 @@ def feature_importance_plot(x_test):
     plt.bar(range(x_test.shape[1]), importances[indices])
     # Add feature names as x-axis labels
     plt.xticks(range(x_test.shape[1]), names, rotation=90)
-    #plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results4.png')
-
+    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results4.png')
+    plt.close()
 
 def classification_report_image(y_train,
                                 y_test,
@@ -275,7 +277,8 @@ def classification_report_image(y_train,
              'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
     plt.axis('off')
     plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/last_result.png')
-
+    plt.close()
+    
     plt.rc('figure', figsize=(5, 5))
     plt.text(0.01, 1.25, str('Logistic Regression Train'),
              {'fontsize': 10}, fontproperties='monospace')
@@ -287,7 +290,7 @@ def classification_report_image(y_train,
              'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
     plt.axis('off')
     plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/last_result2.png')
-
+    plt.close()
 
 def main():
     '''
@@ -307,18 +310,17 @@ def main():
     x_train, x_test, y_train, y_test = perform_feature_engineering(
         updated_df, response)
 
-    #print(y_test.describe())
-    # x_train.to_csv(r'jelal.csv', index = False)
-    #y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf = train_models(
-    #    x_train, x_test, y_train)
-    #plot_training_results(x_test, y_test)
+
+    y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf = train_models(
+        x_train, x_test, y_train)
+    plot_training_results(x_test, y_test)
     feature_importance_plot(x_test)
-    '''classification_report_image(y_train,
+    classification_report_image(y_train,
                                 y_test,
                                 y_train_preds_lr,
                                 y_train_preds_rf,
                                 y_test_preds_lr,
-                                y_test_preds_rf)'''
+                                y_test_preds_rf)
 
 
 if __name__ == '__main__':
