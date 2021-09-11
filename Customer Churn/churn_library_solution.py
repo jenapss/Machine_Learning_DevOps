@@ -140,7 +140,7 @@ def model():
     """
 
     rfc = RandomForestClassifier(random_state=42)
-    lrc = LogisticRegression()
+    lrc = LogisticRegression(solver='lbfgs', max_iter=1000)
 
     param_grid = {
         'n_estimators': [200, 500],
@@ -214,7 +214,7 @@ def feature_importance_plot(x_test):
     '''
 
     # LOAD THE MODEL
-    cv_randomforest = joblib.load('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/rfc_model.pkl')
+    cv_randomforest = joblib.load('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/rfc_model.pkl')
 
     # END LOADING THE MODEL
     explainer = shap.TreeExplainer(cv_randomforest.best_estimator_)
