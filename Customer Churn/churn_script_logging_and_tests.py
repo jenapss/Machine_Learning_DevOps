@@ -2,8 +2,8 @@ import os
 import logging
 import churn_library_solution as cls
 
-IMG_PATH = './images/'
-
+IMG_PATH = 'Customer Churn/images'
+MODEL_PATH = 'Customer Churn/models'
 
 logging.basicConfig(
     filename='./logs/churn_library.log',
@@ -37,11 +37,11 @@ def test_eda(perform_eda,IMG_PATH):
 	df = cls.import_data("./data/bank_data.csv")
 	try:
 		perform_eda(df) 
-		assert os.path.exists(IMG_PATH + '/images/1.jpg') == True
-		assert os.path.exists(IMG_PATH + '/images/2.jpg') == True
-		assert os.path.exists(IMG_PATH + '/images/3.jpg') == True
-		assert os.path.exists(IMG_PATH + '/images/4.jpg') == True
-		assert os.path.exists(IMG_PATH + '/images/5.jpg') == True
+		assert os.path.exists(IMG_PATH + '/1.jpg') == True
+		assert os.path.exists(IMG_PATH + '/2.jpg') == True
+		assert os.path.exists(IMG_PATH + '/3.jpg') == True
+		assert os.path.exists(IMG_PATH + '/4.jpg') == True
+		assert os.path.exists(IMG_PATH + '/5.jpg') == True
 		logging.info('Testing perform_data: SUCCESS')
 	except AssertionError as err:
 		logging.error("Testing perform_data: The plot have not been saved")
@@ -73,7 +73,7 @@ def test_perform_feature_engineering(perform_feature_engineering):
 	test perform_feature_engineering
 	'''
 	df = cls.import_data('./data/bank_csv.csv')
-	response = [] # need to define
+	response = ['Churn'] # need to define
 	try:
 		X_train, X_test, y_train, y_test = perform_feature_engineering(df,response)
 		logging.info(" Performing Feature Engineering SUCCESS")
@@ -82,8 +82,10 @@ def test_perform_feature_engineering(perform_feature_engineering):
 		print("ERROR")
 	
 	try:
-		assert X_train.shape[0] > 0 
+		assert X_train.shape[0] > 0
+		assert X_train.shape[1] == 19 
 		assert X_test.shape[0] > 0
+		assert X_test.shape[1] == 19 
 		assert y_train.shape[0] > 0
 		assert y_test.shape[0] > 0
 		logging.info("Feature Engineering SUCCESS")
@@ -94,21 +96,28 @@ def test_perform_feature_engineering(perform_feature_engineering):
 
 
 
-def test_train_models(train_models):
+def test_train_models():
 	'''
 	test train_models
 	'''
+	try:
+		assert os.path.exists(MODEL_PATH + '/rfc_model.pkl') == True
+		assert os.path.exists(MODEL_PATH + '/logistic_model.pkl') == True
+		logging.info('MODELS ARE SAVED')
+	except AssertionError as err:
+		logging.error('MODELS ARE NOT SAVED')
+		raise err
 
 
+ 
 
-def main():
-    '''
-	main call function
-	'''
-    pass
 
 if __name__ == "__main__":
-	pass
+	'''test_import()
+	test_eda()
+	test_encoder_helper()
+	test_perform_feature_engineering()
+	test_train_models()'''
 
 
 
