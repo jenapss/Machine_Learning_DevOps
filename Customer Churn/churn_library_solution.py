@@ -92,7 +92,7 @@ def encoder_helper(dt_frame, category_lst):  # deleted one argument
     return dt_frame
 
 
-def perform_feature_engineering(dt_frame, response):
+def perform_feature_engineering(dt_frame):
     '''
     input:
             df: pandas dataframe

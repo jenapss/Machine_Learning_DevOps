@@ -11,12 +11,13 @@ logging.basicConfig(
     filemode='w',
     format='%(name)s - %(levelname)s - %(message)s')
 
-def test_import(import_data):
+def test_import():
 	'''
 	test data import - this example is completed for you to assist with the other test functions
 	'''
+
 	try:
-		df = import_data("./data/bank_data.csv")
+		df = cls.import_data("./data/bank_data.csv")
 		logging.info("Testing import_data: SUCCESS")
 	except FileNotFoundError as err:
 		logging.error("Testing import_eda: The file wasn't found")
@@ -30,13 +31,13 @@ def test_import(import_data):
 		raise err
 
 
-def test_eda(perform_eda,IMG_PATH):
+def test_eda(IMG_PATH):
 	'''
 	test perform eda function
 	'''
 	df = cls.import_data("./data/bank_data.csv")
+	cls.perform_eda(df)
 	try:
-		perform_eda(df) 
 		assert os.path.exists(IMG_PATH + '/1.jpg') == True
 		assert os.path.exists(IMG_PATH + '/2.jpg') == True
 		assert os.path.exists(IMG_PATH + '/3.jpg') == True
@@ -48,15 +49,14 @@ def test_eda(perform_eda,IMG_PATH):
 		raise err
 
 
-def test_encoder_helper(encoder_helper):
+def test_encoder_helper():
 	'''
 	test encoder helper
 	'''
 	df = cls.import_data('./data/bank_csv.csv')
 	category_lst = ['Gender', 'Income_Category', 'Marital_Status', 'Education_Level', 'Card_Category']
-
+	cls.encoder_helper(df, category_lst)
 	try:
-		encoder_helper(df, category_lst)
 		assert (category_lst[0] + '_Churn' in df) == True
 		assert (category_lst[1] + '_Churn' in df) == True
 		assert (category_lst[2] + '_Churn' in df) == True
@@ -68,14 +68,13 @@ def test_encoder_helper(encoder_helper):
 		raise err
 
 
-def test_perform_feature_engineering(perform_feature_engineering):
+def test_perform_feature_engineering():
 	'''
 	test perform_feature_engineering
 	'''
 	df = cls.import_data('./data/bank_csv.csv')
-	response = ['Churn'] # need to define
 	try:
-		X_train, X_test, y_train, y_test = perform_feature_engineering(df,response)
+		X_train, X_test, y_train, y_test = cls.perform_feature_engineering(df)
 		logging.info(" Performing Feature Engineering SUCCESS")
 	except:
 		logging.error("Feature Engineering ERROR")
