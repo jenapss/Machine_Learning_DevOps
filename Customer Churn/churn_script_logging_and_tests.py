@@ -2,7 +2,7 @@ import os
 import logging
 import churn_library_solution as cls
 
-IMG_PATH = '/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/'
+IMG_PATH = '/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/eda/'
 MODEL_PATH = '/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models'
 
 logging.basicConfig(
@@ -36,11 +36,11 @@ def test_eda():
 	'''
 	df = cls.import_data("/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/data/bank_data.csv")
 	cls.perform_eda(df)
-	assert os.path.exists(IMG_PATH + '1.jpg') == True
-	assert os.path.exists(IMG_PATH + '2.jpg') == True
-	assert os.path.exists(IMG_PATH + '3.jpg') == True
-	assert os.path.exists(IMG_PATH + '4.jpg') == True
-	assert os.path.exists(IMG_PATH + '5.jpg') == True
+	assert os.path.exists(IMG_PATH + 'churn_dist.jpg') == True
+	assert os.path.exists(IMG_PATH + 'customer_age.jpg') == True
+	assert os.path.exists(IMG_PATH + 'martial_status_dist.jpg') == True
+	assert os.path.exists(IMG_PATH + 'total_transaction_dist.jpg') == True
+	assert os.path.exists(IMG_PATH + 'heatmap.jpg') == True
 	
 	
 

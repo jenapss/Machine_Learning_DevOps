@@ -1,61 +1,126 @@
 
-import os
-import logging
-import churn_library_solution as cls
+from sklearn.metrics import plot_roc_curve, classification_report
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+import shap
+import joblib
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import churn_library_solution as cls
 
-IMG_PATH = 'Customer Churn/images'
-MODEL_PATH = 'Customer Churn/models'
+CSV_DATA = 'Customer Churn/data/bank_data.csv'
 
-logging.basicConfig(
-    filename='Customer Churn/logs/churn_library.log',
-    level = logging.INFO,
-    filemode='w',
-    format='%(name)s - %(levelname)s - %(message)s')
+def plot_report(y_true, y_pred, plot_name):
+    plt.rc('figure', figsize=(7, 7))
+    plt.text(0.01, 1.25, str(plot_name),{'fontsize': 10}, fontproperties='monospace')
+    plt.text(0.01, 0.05, str(classification_report(y_true, y_pred)), {
+             'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
+    plt.axis('off')
+    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/{}.png'.format(plot_name))
+    plt.close()
+
+def classification_report_image(y_train,
+                                y_test,
+                                y_train_preds_lr,
+                                y_train_preds_rf,
+                                y_test_preds_lr,
+                                y_test_preds_rf):
+    '''
+    produces classification report for training and testing results and stores report as image
+    in images folder
+    input:
+            y_train: training response values
+            y_test:  test response values
+            y_train_preds_lr: training predictions from logistic regression
+            y_train_preds_rf: training predictions from random forest
+            y_test_preds_lr: test predictions from logistic regression
+            y_test_preds_rf: test predictions from random forest
+
+    output:
+             None
+    '''
+    '''plt.rc('figure', figsize=(5, 5))
+    # plt.text(0.01, 0.05, str(model.summary()), {'fontsize': 12}) old approach
+    plt.text(0.01, 1.25, str('Random Forest Train'), {
+             'fontsize': 10}, fontproperties='monospace')
+    plt.text(0.01, 0.05, str(classification_report(y_test, y_test_preds_rf)), {
+             'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
+    plt.text(0.01, 0.6, str('Random Forest Test'), {
+             'fontsize': 10}, fontproperties='monospace')
+    plt.text(0.01, 0.7, str(classification_report(y_train, y_train_preds_rf)), {
+             'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
+    plt.axis('off')
+    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/last_result.png')
+    plt.close()
+    
+    plt.rc('figure', figsize=(5, 5))
+    plt.text(0.01, 1.25, str('Logistic Regression Train'),
+             {'fontsize': 10}, fontproperties='monospace')
+    plt.text(0.01, 0.05, str(classification_report(y_train, y_train_preds_lr)), {
+             'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
+    plt.text(0.01, 0.6, str('Logistic Regression Test'), {
+             'fontsize': 10}, fontproperties='monospace')
+    plt.text(0.01, 0.7, str(classification_report(y_test, y_test_preds_lr)), {
+             'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
+    plt.axis('off')
+    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/last_result2.png')
+    plt.close()'''
+
+    plot_report(y_test, y_test_preds_rf, 'RandomForestTraining')
+    plot_report(y_train, y_train_preds_rf, 'RandomForestTest')
+
+    plot_report(y_train, y_train_preds_lr, 'LogRegTrain')
+    plot_report(y_test, y_test_preds_lr, 'LogRegTest')
 
 
-category_lst = [
-    'Gender',
-    'Income_Category',
-    'Marital_Status',
-    'Education_Level',
-    'Card_Category']
+def func1(x_train, x_test, y_train):
 
-'''df = pd.read_csv('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/data/bank_data.csv')
-df['Churn'] = df['Attrition_Flag'].apply(lambda val: 0 if val == "Existing Customer" else 1)
-gender_lst = []
-gender_groups = df.groupby('Gender').mean()['Churn']
+    cv_randomforest = joblib.load('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/rfc_model.pkl')
+    log_reg = joblib.load('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/logistic_model.pkl')
 
-for val in df['Gender']:
-    gender_lst.append(gender_groups.loc[val])
+    y_train_preds_rf = cv_randomforest.predict(x_train)
+    print(y_train_preds_rf)
+    y_test_preds_rf = cv_randomforest.predict(x_test)
+    y_train_preds_lr = log_reg.predict(x_train)
+    y_test_preds_lr = log_reg.predict(x_test)
 
-df['Gender_Churn'] = gender_lst    
-
-print(df)'''
+    return y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf 
 
 
+def main():
+    '''
+    ML Pipeline for Customer Churn prediction project
+
+    '''
+    category_lst = [
+        'Gender',
+        'Income_Category',
+        'Marital_Status',
+        'Education_Level',
+        'Card_Category']
+    
+    dt_frame = cls.import_data(CSV_DATA)
+    cls.perform_eda(dt_frame)
+    updated_df = cls.encoder_helper(dt_frame, category_lst)
+    x_train, x_test, y_train, y_test = cls.perform_feature_engineering(
+        updated_df)
 
 
-def test():
-    try:
-        df = cls.import_data('Customer Churn/data/bank_data.csv')
-        category_lst = [
-            'Gender',
-            'Income_Category',
-            'Marital_Status',
-            'Education_Level',
-            'Card_Category']
-        updated_df = cls.encoder_helper(df, category_lst)
-        print(type(updated_df))
-        assert (category_lst[0] + '_Churn' in updated_df) == True
-        assert (category_lst[1] + '_Churn' in updated_df) == True
-        assert (category_lst[2] + '_Churn' in updated_df) == True
-        assert (category_lst[3] + '_Churn' in updated_df) == True
-        assert (category_lst[4] + '_Churn' in updated_df) == True
-        logging.info('SUCCESS = Testing encoder_helper: Columns are created')
-        print('hello')
-    except AssertionError as err:
-        logging.error("ERROR = Testing encoder_helper :   Columns are not created!")
-        raise err
+    y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf = func1(
+        x_train, x_test, y_train)
+    #cls.plot_training_results(x_test, y_test)
+    #cls.feature_importance_plot(x_test)
+    classification_report_image(y_train,
+                                y_test,
+                                y_train_preds_lr,
+                                y_train_preds_rf,
+                                y_test_preds_lr,
+                                y_test_preds_rf)
 
-test()
+
+if __name__ == '__main__':
+    main()

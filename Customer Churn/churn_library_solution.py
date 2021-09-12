@@ -18,7 +18,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
-IMG_PATH = '/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/'
+IMG_PATH = '/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/eda/'
 CSV_DATA = 'Customer Churn/data/bank_data.csv'
 
 
@@ -47,25 +47,25 @@ def perform_eda(dt_frame):
     dt_frame['Churn'] = dt_frame['Attrition_Flag'].apply(
         lambda val: 0 if val == "Existing Customer" else 1)
     fig1 = dt_frame['Churn'].hist().get_figure()
-    fig1.savefig(IMG_PATH + '1.jpg')
+    fig1.savefig(IMG_PATH + 'churn_dist.jpg')
     plt.close()
 
     fig2 = dt_frame['Customer_Age'].hist().get_figure()
-    fig2.savefig(IMG_PATH + '2.jpg')
+    fig2.savefig(IMG_PATH + 'customer_age.jpg')
     plt.close()
     fig3 = dt_frame.Marital_Status.value_counts(
         'normalize').plot(kind='bar').get_figure()
-    fig3.savefig(IMG_PATH + '3.jpg')
+    fig3.savefig(IMG_PATH + 'martial_status_dist.jpg')
     plt.close()
     fig4 = sns.distplot(dt_frame['Total_Trans_Ct']).get_figure()
-    fig4.savefig(IMG_PATH + '4.jpg')
+    fig4.savefig(IMG_PATH + 'total_transaction_dist.jpg')
     plt.close()
     fig5 = sns.heatmap(
         dt_frame.corr(),
         annot=False,
         cmap='Dark2_r',
         linewidths=2).get_figure()
-    fig5.savefig(IMG_PATH + '5.jpg')
+    fig5.savefig(IMG_PATH + 'heatmap.jpg')
     plt.close()
 
 def encoder_helper(dt_frame, category_lst):  # deleted one argument
@@ -224,7 +224,7 @@ def feature_importance_plot(x_test):
     shap.summary_plot(shap_values, x_test, plot_type='bar',show=False)
 
     # save plot
-    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results3.png')
+    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results/shap.png')
     plt.close()
 
     # Calculate feature importances
@@ -242,8 +242,19 @@ def feature_importance_plot(x_test):
     plt.bar(range(x_test.shape[1]), importances[indices])
     # Add feature names as x-axis labels
     plt.xticks(range(x_test.shape[1]), names, rotation=90)
-    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results4.png')
+    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results/feat_importance.png')
     plt.close()
+
+
+def plot_report(y_true, y_pred, plot_name):
+    plt.rc('figure', figsize=(10, 10))
+    plt.text(0.01, 1.25, str(plot_name),{'fontsize': 10}, fontproperties='monospace')
+    plt.text(0.01, 0.05, str(classification_report(y_true, y_pred)), {
+             'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
+    plt.axis('off')
+    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results/{}.png'.format(plot_name))
+    plt.close()
+
 
 def classification_report_image(y_train,
                                 y_test,
@@ -265,32 +276,13 @@ def classification_report_image(y_train,
     output:
              None
     '''
-    plt.rc('figure', figsize=(5, 5))
-    # plt.text(0.01, 0.05, str(model.summary()), {'fontsize': 12}) old approach
-    plt.text(0.01, 1.25, str('Random Forest Train'), {
-             'fontsize': 10}, fontproperties='monospace')
-    plt.text(0.01, 0.05, str(classification_report(y_test, y_test_preds_rf)), {
-             'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
-    plt.text(0.01, 0.6, str('Random Forest Test'), {
-             'fontsize': 10}, fontproperties='monospace')
-    plt.text(0.01, 0.7, str(classification_report(y_train, y_train_preds_rf)), {
-             'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
-    plt.axis('off')
-    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/last_result.png')
-    plt.close()
-    
-    plt.rc('figure', figsize=(5, 5))
-    plt.text(0.01, 1.25, str('Logistic Regression Train'),
-             {'fontsize': 10}, fontproperties='monospace')
-    plt.text(0.01, 0.05, str(classification_report(y_train, y_train_preds_lr)), {
-             'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
-    plt.text(0.01, 0.6, str('Logistic Regression Test'), {
-             'fontsize': 10}, fontproperties='monospace')
-    plt.text(0.01, 0.7, str(classification_report(y_test, y_test_preds_lr)), {
-             'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
-    plt.axis('off')
-    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/last_result2.png')
-    plt.close()
+    plot_report(y_test, y_test_preds_rf, 'RandomForestTest')
+    plot_report(y_train, y_train_preds_rf, 'RandomForestTrain')
+
+    plot_report(y_train, y_train_preds_lr, 'LogRegTrain')
+    plot_report(y_test, y_test_preds_lr, 'LogRegTest')
+
+
 
 def main():
     '''
