@@ -18,7 +18,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
-IMG_PATH = 'Customer Churn/images/'
+IMG_PATH = '/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/'
 CSV_DATA = 'Customer Churn/data/bank_data.csv'
 
 
