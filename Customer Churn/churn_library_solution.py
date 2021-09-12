@@ -18,7 +18,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
-IMG_PATH = '/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/eda/'
+IMG_PATH = 'Customer Churn/images/eda/'
 CSV_DATA = 'Customer Churn/data/bank_data.csv'
 
 
@@ -178,8 +178,8 @@ def train_models(x_train, x_test, y_train):
     y_test_preds_lr = log_reg.predict(x_test)
     print('TRAINING ENDED...')
     # save the best model
-    joblib.dump(cv_randomforest.best_estimator_, '/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/rfc_model.pkl')
-    joblib.dump(log_reg, '/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/logistic_model.pkl')
+    joblib.dump(cv_randomforest.best_estimator_, 'Customer Churn/models/rfc_model.pkl')
+    joblib.dump(log_reg, 'Customer Churn/models/logistic_model.pkl')
 
     return y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf
 
@@ -189,8 +189,8 @@ def plot_training_results(x_test, y_test):
     Plott training results
 
     '''
-    log_reg = joblib.load('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/logistic_model.pkl')
-    cv_randomforest = joblib.load('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/rfc_model.pkl')
+    log_reg = joblib.load('Customer Churn/models/logistic_model.pkl')
+    cv_randomforest = joblib.load('Customer Churn/models/rfc_model.pkl')
     # ----- PLOTS ----- PLOTS ----
     # logistics regression results
     plt.figure(1,figsize=(20, 12))
@@ -199,7 +199,7 @@ def plot_training_results(x_test, y_test):
     plot_roc_curve(cv_randomforest,
                    x_test, y_test, ax=axis, alpha=0.8)
     plot_roc_curve(log_reg, x_test, y_test, ax=axis, alpha=0.8)
-    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results2.png')
+    plt.savefig('Customer Churn/images/results2.png')
     plt.close()
 
 def feature_importance_plot(x_test):
@@ -216,7 +216,7 @@ def feature_importance_plot(x_test):
     '''
 
     # LOAD THE MODEL
-    cv_randomforest = joblib.load('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models/rfc_model.pkl')
+    cv_randomforest = joblib.load('Customer Churn/models/rfc_model.pkl')
 
     # END LOADING THE MODEL
     explainer = shap.TreeExplainer(cv_randomforest)
@@ -224,7 +224,7 @@ def feature_importance_plot(x_test):
     shap.summary_plot(shap_values, x_test, plot_type='bar',show=False)
 
     # save plot
-    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results/shap.png')
+    plt.savefig('Customer Churn/images/results/shap.png')
     plt.close()
 
     # Calculate feature importances
@@ -242,7 +242,7 @@ def feature_importance_plot(x_test):
     plt.bar(range(x_test.shape[1]), importances[indices])
     # Add feature names as x-axis labels
     plt.xticks(range(x_test.shape[1]), names, rotation=90)
-    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results/feat_importance.png')
+    plt.savefig('Customer Churn/images/results/feat_importance.png')
     plt.close()
 
 
@@ -252,7 +252,7 @@ def plot_report(y_true, y_pred, plot_name):
     plt.text(0.01, 0.05, str(classification_report(y_true, y_pred)), {
              'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
     plt.axis('off')
-    plt.savefig('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/results/{}.png'.format(plot_name))
+    plt.savefig('Customer Churn/images/results/{}.png'.format(plot_name))
     plt.close()
 
 

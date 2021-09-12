@@ -2,8 +2,8 @@ import os
 import logging
 import churn_library_solution as cls
 
-IMG_PATH = '/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/images/eda/'
-MODEL_PATH = '/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/models'
+IMG_PATH = 'Customer Churn/images/eda/'
+MODEL_PATH = 'Customer Churn/models'
 
 logging.basicConfig(
     filename='Customer Churn/logs/churn_library.log',
@@ -17,7 +17,7 @@ def test_import():
 	'''
 
 	try:
-		df = cls.import_data("/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/data/bank_data.csv")
+		df = cls.import_data("Customer Churn/data/bank_data.csv")
 		logging.info("SUCCESS - Testing import_data")
 	except FileNotFoundError as err:
 		logging.error("Testing import_eda: The file wasn't found")
@@ -34,7 +34,7 @@ def test_eda():
 	'''
 	test perform eda function
 	'''
-	df = cls.import_data("/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/data/bank_data.csv")
+	df = cls.import_data("Customer Churn/data/bank_data.csv")
 	cls.perform_eda(df)
 	assert os.path.exists(IMG_PATH + 'churn_dist.jpg') == True
 	assert os.path.exists(IMG_PATH + 'customer_age.jpg') == True
@@ -50,7 +50,7 @@ def test_encoder_helper():
 	test encoder helper
 	'''
 	try:
-		df = cls.import_data('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/data/bank_data.csv')
+		df = cls.import_data('Customer Churn/data/bank_data.csv')
 		category_lst = [
 			'Gender',
 			'Income_Category',
@@ -74,7 +74,7 @@ def test_perform_feature_engineering():
 	test perform_feature_engineering
 	'''
 	
-	df = cls.import_data('/Users/jelaleddin/MLOps-Udacity-Projects/Customer Churn/data/bank_data.csv')
+	df = cls.import_data('Customer Churn/data/bank_data.csv')
 	category_lst = [
 		'Gender',
 		'Income_Category',

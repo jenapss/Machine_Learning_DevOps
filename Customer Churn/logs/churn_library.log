@@ -1,5 +1,4 @@
 root - INFO - SUCCESS - Testing import_data
-root - INFO - SUCCESS - Testing perform_eda
 root - INFO - SUCCESS - Testing encoder_helper: Columns are created!
 root - INFO - SUCCESS - Feature Engineering
 root - INFO - SUCCESS - MODELS SAVED
