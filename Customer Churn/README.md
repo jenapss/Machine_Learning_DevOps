@@ -20,8 +20,8 @@ Raw view for customer dataset is below:
 
 ### Model Training
 
-For Explatory Data Analysis and Model training you should run ```churn_library_solution.py``` from your terminal and corresponding training notifications will displayed on terminal. This single python script does all EDA, data preprocessing and model training and all at once. Corresponding plots of EDA, data preprocessing and model training and testing metrics will be save in ```/Customer Chunr/images/ ``` directory.
+1) For Explatory Data Analysis and Model training you should run ```churn_library_solution.py``` from your terminal by this command: ``` python churn_library_solution.py``` and corresponding training notifications will displayed on terminal. This single python script does all EDA, data preprocessing and model training and all at once. Corresponding plots of EDA, data preprocessing and model training and testing metrics will be save in ```/Customer Chunr/images/ ``` directory.
 
 ### Testing Driven Development
 
-As it is important to follow software engineering best practices, I made testing script to ensure that all functionality of ``` churn_library_solution.py``` works properly. To test previously mentioned script I made separete script - ``` churn_libary_logging_and_test.py```. This file tests the behavior of all functions from ``` churn_library_solution.py```. The result of tests is stored at ```/Customer Churn/logs/``` folder.
+As it is important to follow software engineering best practices, I made testing script to ensure that all functionality of ``` churn_library_solution.py``` works properly. To test previously mentioned script I made separete script - ``` churn_libary_logging_and_test.py```. This file tests the behavior of all functions from ```churn_library_solution.py```. The result of tests is stored at ```/Customer Churn/logs/``` folder.
