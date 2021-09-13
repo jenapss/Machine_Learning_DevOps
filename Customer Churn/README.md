@@ -11,7 +11,7 @@ The Customer Churn Prediction is about identifying credit card customers that ar
 Raw view for customer dataset is below:
 
 
-![Screenshot](/Customer Churn/readme_files/sample_dataset.png?raw=True)
+![Screenshot](https://github.com/jenapss/Machine_Learning_DevOps/blob/main/Customer%20Churn/readme_files/sample_dataset.png?raw=True)
 
 
 
