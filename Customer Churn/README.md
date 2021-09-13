@@ -16,7 +16,17 @@ Raw view for customer dataset is below:
 ## Requirements
 
 In order to be able to run the project files, first install all the required libraries and dependencies by following command: ```pip install -r requirements.txt```
-Needed packages: ```pandas, logging, sklearn, seaborn, joblib, numpy, shap, matplotlib```
+
+Description some of important packages: 
+
+| Packages       |  Package's primary function    |
+|----------------|--------------------------------|
+|Pandas          | Tabular Data Manupilation      |
+|sklearn         | Machine learning algorithms    |
+|numpy           |Array & Vector data Manupilation|
+|matplotlib      | Plotting                       |
+
+
 ## Running Files
 
 
